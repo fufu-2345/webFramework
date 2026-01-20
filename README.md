@@ -1,11 +1,12 @@
-**วิธี install หลัง git clone**  
-1.change directory to nextjs_template in command prompt  
-2.type setup  
-3.wait until done
+**วิธี install พิมพ์ลง command prompt ทีละบรรทัด**  
+1.git clone https://github.com/fufu-2345/webFramework.git
+2.cd webFramework
+3.setup  
+4.Try npm start
 
 ---
 
-**start ได้ 2 วิธี**
+**start ได้ 2 วิธี**  
 
 - Production Build :  
   npm run build ////ก่อนถึงจะ  
