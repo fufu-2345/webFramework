@@ -4,6 +4,7 @@ cd apps\front
 call npm install
 cd ..\apps\back
 call npm install
+cd ..\..
 call code .
 echo.
 echo.
