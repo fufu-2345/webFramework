@@ -6,7 +6,7 @@
     "apps/*"
   ],
   "scripts": {
-    "start": "concurrently \"npm --prefix apps/back start\" \"npm --prefix apps/front start\"",
+    "start": "concurrently \"npm --prefix apps/back start\" \"npm --prefix apps/front run dev\"",
     "build": "npm --prefix apps/front run build",
     "lint": "npm --prefix apps/front run lint"
   },
