@@ -1,9 +1,14 @@
 const express = require("express");
+const cors = require('cors');
+const adminSite = require('./adminSite');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 
+app.use(cors());
 app.use(express.json());
+
+app.use('/admin', adminSite);
 
 app.get("/", (req, res) => {
   res.send("aaaaaaaaaaaaaaaaaaaaaaaaa");
