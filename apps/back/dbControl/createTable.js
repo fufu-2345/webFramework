@@ -36,7 +36,8 @@ async function setupDatabase() {
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 player INT NOT NULL,
-                remain INT NOT NULL
+                remain INT NOT NULL,
+                type VARCHAT(50) NOT NULL
             )
         `;
 
