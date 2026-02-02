@@ -17,8 +17,8 @@ const Navbar = () => {
                 </div>
 
                 <div className="px-2 py-1">
-                    <Link href="/book" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">
-                        Book
+                    <Link href="/myTables" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition">
+                        My Tables
                     </Link>
                 </div>
 
