@@ -5,10 +5,6 @@ import { registerUsers } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-
-
-
-
 export default function page() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -34,19 +30,11 @@ export default function page() {
         finally {
             setLoading(false);
         }
-
-
-
     }
-
-
 
     if (loading) {
         return <div className="text-center">Registering...</div>;
     }
-
-
-
     return (
         <>
             <div className="flex min-h-screen items-center justify-center">
@@ -71,15 +59,8 @@ export default function page() {
                             Login
                         </Link>
                     </p>
-
                 </div>
-
-
             </div>
-
         </>
     );
-
-
-
 }

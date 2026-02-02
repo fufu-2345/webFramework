@@ -5,6 +5,11 @@ const adminSite = require('./adminSite');
 const db = require("./config/db");
 const { router } = require("./routes/router");
 const cookieParser = require('cookie-parser');
+const gameRoute = require("./routes/gameRoute");
+const gameController = require("./controllers/gameController");
+const tableRoute = require("./routes/tableRoute");
+const paymentRoute = require("./routes/paymentRoute");
+
 
 dotenv.config();
 const app = express();
@@ -18,12 +23,23 @@ app.use(cors({
   credentials: true,
 }));
 
+app.use(express.json());
 app.use('/admin', adminSite);
 app.use('/api', router);
+app.use("/game", gameRoute);
+app.use("/payment", paymentRoute);
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to the backend server!');
 });
+app.use("/tables", tableRoute);
+
+gameController.autoClearExpiredTables();
+setInterval(
+  gameController.autoClearExpiredTables,
+  60 * 1000
+);
 
 app.listen(PORT, () => {
   console.log(`Backend server running on http://localhost:${PORT}`);
