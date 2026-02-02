@@ -141,3 +141,34 @@ exports.getTables = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+
+exports.getMyReservedTables = async (req, res) => {
+  const { userID } = req.params;
+
+  try {
+    const sql = `
+      SELECT 
+        rt.id AS rentTableId,
+        rt.timeStart,
+        rt.timeEnd,
+        t.id AS tableId,
+        t.player,
+        t.cost
+      FROM rentTables rt
+      JOIN Tables t ON rt.tablesID = t.id
+      WHERE rt.userID = ?
+        AND rt.timeEnd > NOW()
+      ORDER BY rt.timeStart DESC
+    `;
+
+    const [result] = await db.query(sql, [userID]);
+    res.json(result);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+

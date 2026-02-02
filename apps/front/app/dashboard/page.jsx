@@ -40,6 +40,10 @@ export default function page() {
                 </p>
 
                 <p className="mt-2 text-sm text-gray-500">
+                    Id: {user.id}
+                </p>
+
+                <p className="mt-2 text-sm text-gray-500">
                     Email: {user.email}
                 </p>
 
