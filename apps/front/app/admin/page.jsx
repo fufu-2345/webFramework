@@ -2,15 +2,34 @@
 
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import { useAuth } from '../../context/authContext'; 
+import { useRouter } from 'next/navigation';
 
 const API_BASE = 'http://localhost:5000/admin';
 
 export default function AdminPage() {
+    const { user , loadingStatus , logout } = useAuth();
+    const router = useRouter();
+
     const [activeTab, setActiveTab] = useState('tables');
 
     const [dataList, setDataList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+
+    useEffect(()=>{
+        if( !loadingStatus && !user ) {
+            router.push("/login");
+        }
+        if( !loadingStatus && user && user.role !== 'admin' ) {
+            router.push("/dashboard");
+        }
+        
+    },[user , loadingStatus , router ]);
+
+    
+
 
     const [formData, setFormData] = useState({
         name: '',
@@ -20,6 +39,10 @@ export default function AdminPage() {
     });
 
     const [editId, setEditId] = useState(null);
+
+    
+
+
 
     useEffect(() => {
         fetchData();
@@ -147,6 +170,15 @@ export default function AdminPage() {
             }
         });
     };
+
+
+    if(loadingStatus){
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <p className="text-lg">Loading...</p>
+            </div>
+            )}
+    if(!user || user.role !== 'admin') return null;
 
     return (
         <div className="min-h-screen bg-gray-100 p-8">

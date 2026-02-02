@@ -7,16 +7,16 @@ import { useAuth } from "../../context/authContext";
 
 export default function page() {
 
-    const { user, loading , logout } = useAuth();
+    const { user, loadingStatus , logout } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
-        if (!loading && !user) {
+        if (!loadingStatus && !user) {
         router.push("/login");
     }
-    },[user, loading, router]);
+    },[user, loadingStatus, router]);
 
-    if (loading) {
+    if (loadingStatus) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-lg">Loading...</p>
