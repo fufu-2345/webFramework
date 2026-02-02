@@ -201,7 +201,7 @@ export default function AdminPage() {
                         {/* Input ร่วม: จำนวนผู้เล่น */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                {activeTab === 'tables' ? 'รองรับผู้เล่น (คน)' : 'จำนวนผู้เล่นแนะนำ'}
+                                {activeTab === 'tables' ? 'จำนวนผู้เล่น' : 'จำนวนผู้เล่นแนะนำ'}
                             </label>
                             <input
                                 type="number"
