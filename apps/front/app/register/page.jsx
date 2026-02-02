@@ -19,7 +19,8 @@ export default function page() {
         setLoading(true);
 
         try {
-            await registerUsers({ username, email, password })
+            const res = await registerUsers({ username, email, password });
+            console.log("Registration successful:", res);
             alert("Registration successful! Please login.");
             router.push("/login");
 

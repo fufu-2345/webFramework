@@ -3,7 +3,7 @@ import { apiFetch } from "./api";
 
 
 export const loginUsers = (data) => {
-    return apiFetch('login',{
+    return apiFetch('api/login',{
         method: 'POST',
         body: JSON.stringify(data)
         
@@ -13,20 +13,20 @@ export const loginUsers = (data) => {
 
 export const meData = async () => {
  
-    return await apiFetch("me",{
+    return await apiFetch("api/me",{
         method: 'GET',
     });
   
 };
 
 export const logoutUsers = () =>{
-    return apiFetch('logout',{
+    return apiFetch('api/logout',{
         method: 'POST',
     });
 };
 
 export const registerUsers = async (data) => {
-    return await apiFetch('register',{
+    return await apiFetch('api/register',{
         method: 'POST',
         body: JSON.stringify(data),
     });
