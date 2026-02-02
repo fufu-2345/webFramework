@@ -10,12 +10,11 @@
     "build": "npm --prefix apps/front run build",
     "lint": "npm --prefix apps/front run lint"
   },
-  "dependencies": {},
   "devDependencies": {
     "concurrently": "^8.0.0",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1",
     "eslint": "^9",
-    "eslint-config-next": "^16.1.1"
+    "eslint-config-next": "^16.1.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   }
 }
