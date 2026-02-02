@@ -1,12 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import qrImage from "./qr.png";
+import Swal from 'sweetalert2';
 
 export default function BookPage() {
   const userID = 2; // สมมติ User ID
 
   // 1. เปลี่ยน TABLES const เป็น state เพื่อรอรับจาก DB
-  const [tables, setTables] = useState([]); 
+  const [tables, setTables] = useState([]);
   const [table, setTable] = useState(null);
   const [date, setDate] = useState("");
   const [slots, setSlots] = useState([]);
@@ -21,7 +22,7 @@ export default function BookPage() {
       try {
         const res = await fetch("http://localhost:5000/tables");
         const data = await res.json();
-        setTables(data); 
+        setTables(data);
       } catch (error) {
         console.error("Error fetching tables:", error);
       }
@@ -33,16 +34,16 @@ export default function BookPage() {
   const loadSlots = async (d, tableID) => {
     setDate(d);
     setSelect([]);
-    setSlots([]); 
+    setSlots([]);
 
     try {
-        const res = await fetch(
-          `http://localhost:5000/tables/available?date=${d}&tableID=${tableID}`
-        );
-        const data = await res.json();
-        setSlots(data);
+      const res = await fetch(
+        `http://localhost:5000/tables/available?date=${d}&tableID=${tableID}`
+      );
+      const data = await res.json();
+      setSlots(data);
     } catch (error) {
-        console.error("Error fetching slots:", error);
+      console.error("Error fetching slots:", error);
     }
   };
 
@@ -63,7 +64,11 @@ export default function BookPage() {
       return;
     }
     if (!isContiguous(slot)) {
-      alert("⛔ ต้องเลือกช่วงเวลาที่ติดกันเท่านั้น");
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'ต้องเลือกช่วงเวลาที่ติดกันเท่านั้น',
+      });
       return;
     }
     setSelect([...select, slot]);
@@ -81,32 +86,40 @@ export default function BookPage() {
         body: JSON.stringify({
           userID,
           tableID: table.id,
-          slots: select, 
+          slots: select,
         }),
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-         throw new Error(result.message || "เกิดข้อผิดพลาด");
+        throw new Error(result.message || "เกิดข้อผิดพลาด");
       }
 
       // ปิด Popup และแจ้งเตือน
       setShowPaymentModal(false);
-      alert("🎉 " + result.message); 
+      Swal.fire({
+        icon: 'success',
+        title: 'สำเร็จ!',
+        text: 'การจองโต๊ะสำเร็จแล้ว',
+      });
 
       // ✅ จุดที่แก้ไข: ใช้ rentTableId ที่ Backend ส่งกลับมา (result.rentTableId)
       // ID นี้คือ rentTable.id (Primary Key ของการจองครั้งนี้)
       if (result.rentTableId) {
-         window.location.href = `http://localhost:3000/borrow?tableId=${result.rentTableId}`;
+        window.location.href = `http://localhost:3000/borrow?tableId=${result.rentTableId}`;
       } else {
-         console.error("ไม่ได้รับ rentTableId จาก Backend");
-         // กรณีกันเหนียว: ถ้าไม่มี ID ให้กลับไปหน้าหลักหรือแจ้งเตือน
+        console.error("ไม่ได้รับ rentTableId จาก Backend");
+        // กรณีกันเหนียว: ถ้าไม่มี ID ให้กลับไปหน้าหลักหรือแจ้งเตือน
       }
 
     } catch (error) {
       console.error(error);
-      alert("❌ " + error.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด',
+        text: err.message,
+      });
     }
   };
 
@@ -152,7 +165,7 @@ export default function BookPage() {
             <input
               type="date"
               style={styles.input}
-              value={date} 
+              value={date}
               onChange={(e) => loadSlots(e.target.value, table.id)}
             />
           </>

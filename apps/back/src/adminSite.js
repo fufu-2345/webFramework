@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const db = require('./config/db');
 
+// ==========================================
+// 🪑 SECTION: TABLES (จัดการโต๊ะ)
+// ==========================================
+
+// 1. ดึงข้อมูลโต๊ะทั้งหมด
 router.get('/tables', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM Tables ORDER BY id DESC');
@@ -12,6 +17,7 @@ router.get('/tables', async (req, res) => {
     }
 });
 
+// 2. สร้างโต๊ะใหม่
 router.post('/tables', async (req, res) => {
     const { player, cost } = req.body;
     if (!player || !cost) {
@@ -28,6 +34,7 @@ router.post('/tables', async (req, res) => {
     }
 });
 
+// 3. แก้ไขข้อมูลโต๊ะ
 router.put('/tables/:id', async (req, res) => {
     const { id } = req.params;
     const { player, cost } = req.body;
@@ -46,6 +53,7 @@ router.put('/tables/:id', async (req, res) => {
     }
 });
 
+// 4. ลบโต๊ะ
 router.delete('/tables/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -66,6 +74,11 @@ router.delete('/tables/:id', async (req, res) => {
     }
 });
 
+// ==========================================
+// 🎮 SECTION: GAMES (จัดการเกม)
+// ==========================================
+
+// 1. ดึงข้อมูลเกมทั้งหมด
 router.get('/games', async (req, res) => {
     try {
         const [rows] = await db.query('SELECT * FROM Game ORDER BY id DESC');
@@ -76,30 +89,32 @@ router.get('/games', async (req, res) => {
     }
 });
 
+// 2. เพิ่มเกมใหม่
 router.post('/games', async (req, res) => {
-    const { name, player, remain } = req.body;
+    const { name, player, remain, type } = req.body;
 
-    if (!name || !player || remain === undefined) {
-        return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบ (ชื่อ, จำนวนผู้เล่น, จำนวนคงเหลือ)' });
+    if (!name || !player || remain === undefined || !type) {
+        return res.status(400).json({ error: 'กรุณากรอกข้อมูลให้ครบ (ชื่อ, ผู้เล่น, คงเหลือ, ประเภท)' });
     }
 
     try {
-        const sql = 'INSERT INTO Game (name, player, remain) VALUES (?, ?, ?)';
-        const [result] = await db.execute(sql, [name, player, remain]);
-        res.json({ id: result.insertId, name, player, remain, message: 'เพิ่มเกมสำเร็จ' });
+        const sql = 'INSERT INTO Game (name, player, remain, type) VALUES (?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [name, player, remain, type]);
+        res.json({ id: result.insertId, name, player, remain, type, message: 'เพิ่มเกมสำเร็จ' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'เพิ่มเกมไม่สำเร็จ' });
     }
 });
 
+// 3. แก้ไขเกม
 router.put('/games/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, player, remain } = req.body;
+    const { name, player, remain, type } = req.body;
 
     try {
-        const sql = 'UPDATE Game SET name = ?, player = ?, remain = ? WHERE id = ?';
-        const [result] = await db.execute(sql, [name, player, remain, id]);
+        const sql = 'UPDATE Game SET name = ?, player = ?, remain = ?, type = ? WHERE id = ?';
+        const [result] = await db.execute(sql, [name, player, remain, type, id]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'ไม่พบเกมที่ต้องการแก้ไข' });
@@ -111,6 +126,7 @@ router.put('/games/:id', async (req, res) => {
     }
 });
 
+// 4. ลบเกม
 router.delete('/games/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -128,6 +144,22 @@ router.delete('/games/:id', async (req, res) => {
             return res.status(400).json({ error: 'ไม่สามารถลบเกมนี้ได้ เนื่องจากมีการเช่าเล่นอยู่' });
         }
         res.status(500).json({ error: 'ลบเกมไม่สำเร็จ' });
+    }
+});
+
+// ==========================================
+// 📊 SECTION: STATISTICS (สถิติ)
+// ==========================================
+
+// 1. ดึงข้อมูลสถิติทั้งหมด
+router.get('/statistics', async (req, res) => {
+    try {
+        // เรียงตามเวลาล่าสุดก่อน เพื่อให้ดูกราฟง่ายขึ้น (หรือ ASC แล้วแต่ UI)
+        const [rows] = await db.query('SELECT * FROM statistic ORDER BY timeStart ASC');
+        res.json(rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'ดึงข้อมูลสถิติไม่สำเร็จ' });
     }
 });
 

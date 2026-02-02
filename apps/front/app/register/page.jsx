@@ -4,6 +4,7 @@ import { useState } from "react";
 import { registerUsers } from "../../lib/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Swal from 'sweetalert2';
 
 export default function page() {
     const [username, setUsername] = useState("");
@@ -21,7 +22,11 @@ export default function page() {
         try {
             const res = await registerUsers({ username, email, password });
             console.log("Registration successful:", res);
-            alert("Registration successful! Please login.");
+            Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful',
+                text: 'You have registered successfully. Please login.',
+            });
             router.push("/login");
 
         }

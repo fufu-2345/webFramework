@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Swal from 'sweetalert2';
 
 export default function GamePage() {
   // --- STATE ---
@@ -18,7 +19,7 @@ export default function GamePage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const id = params.get("tableId");
-      
+
       if (id) {
         setRentTableId(id);
       } else {
@@ -74,7 +75,14 @@ export default function GamePage() {
   };
 
   const handleBorrow = async (gameID) => {
-    if (!rentTableId) return alert("กรุณาระบุโต๊ะก่อนยืมเกม (ตรวจสอบ URL)");
+    if (!rentTableId) if (!rentTableId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด!',
+        text: 'กรุณาระบุโต๊ะก่อนยืมเกม (ตรวจสอบ URL).',
+      });
+      return;
+    }
 
     try {
       const res = await fetch("http://localhost:5000/game/borrow", {
@@ -88,19 +96,32 @@ export default function GamePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        alert(data.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด!',
+          text: data.error || "เกิดข้อผิดพลาดในการยืมเกม",
+        });
         return;
       }
 
       fetchGames({ search, player, type });
       fetchBorrowedGames();
     } catch (error) {
-      alert("เกิดข้อผิดพลาดในการยืมเกม");
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด!',
+        text: error.message || "เกิดข้อผิดพลาดในการยืมเกม",
+      });
     }
   };
 
   const handleReturn = async (gameID) => {
-    if (!rentTableId) return alert("ไม่พบข้อมูลโต๊ะ");
+    if (!rentTableId) return
+    Swal.fire({
+      icon: 'error',
+      title: 'เกิดข้อผิดพลาด!',
+      text: "ไม่พบข้อมูลโต๊ะ",
+    });
 
     try {
       const res = await fetch("http://localhost:5000/game/return", {
@@ -115,7 +136,11 @@ export default function GamePage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด!',
+          text: data.error,
+        });
         return;
       }
 
@@ -123,7 +148,11 @@ export default function GamePage() {
       fetchBorrowedGames();
       fetchGames({ search, player, type });
     } catch (error) {
-      alert("เกิดข้อผิดพลาดในการคืนเกม");
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาด!',
+        text: error.message || "เกิดข้อผิดพลาดในการคืนเกม",
+      });
     }
   };
 
@@ -145,7 +174,7 @@ export default function GamePage() {
   // --- RENDER: หน้าปกติ ---
   return (
     <div style={{ padding: 30, backgroundColor: "white", minHeight: "100vh", color: "black" }}>
-      <h1>🎲 ระบบยืมบอร์ดเกม <span style={{fontSize: "0.6em", color: "gray"}}>(โต๊ะที่: {rentTableId})</span></h1>
+      <h1>🎲 ระบบยืมบอร์ดเกม <span style={{ fontSize: "0.6em", color: "gray" }}>(โต๊ะที่: {rentTableId})</span></h1>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         <input
@@ -178,7 +207,7 @@ export default function GamePage() {
           <option value="strategy">Strategy</option>
         </select>
 
-        <button onClick={handleFilter} style={{cursor: 'pointer', backgroundColor: '#ddd', border: '2px solid black'}}>ค้นหา 🔎</button>
+        <button onClick={handleFilter} style={{ cursor: 'pointer', backgroundColor: '#ddd', border: '2px solid black' }}>ค้นหา 🔎</button>
       </div>
 
       {/* --- TABS --- */}
@@ -237,22 +266,22 @@ export default function GamePage() {
                 borderRadius: 4
               }}
             >
-              <h4 style={{margin: "0 0 5px 0"}}>{game.name}</h4>
-              <div style={{fontSize: "0.9em"}}>ประเภท: {game.type}</div>
-              <div style={{fontSize: "0.9em"}}>👥 {game.player} คน</div>
-              <div style={{fontSize: "0.9em", color: game.remain > 0 ? "green" : "red"}}>
-                 📦 คงเหลือ {game.remain}
+              <h4 style={{ margin: "0 0 5px 0" }}>{game.name}</h4>
+              <div style={{ fontSize: "0.9em" }}>ประเภท: {game.type}</div>
+              <div style={{ fontSize: "0.9em" }}>👥 {game.player} คน</div>
+              <div style={{ fontSize: "0.9em", color: game.remain > 0 ? "green" : "red" }}>
+                📦 คงเหลือ {game.remain}
               </div>
 
               <button
                 disabled={game.remain <= 0}
                 onClick={() => handleBorrow(game.id)}
                 style={{
-                    marginTop: 8,
-                    padding: "5px 10px",
-                    cursor: game.remain > 0 ? "pointer" : "not-allowed",
-                    backgroundColor: game.remain > 0 ? "#e0f7fa" : "#ccc",
-                    border: "1px solid black"
+                  marginTop: 8,
+                  padding: "5px 10px",
+                  cursor: game.remain > 0 ? "pointer" : "not-allowed",
+                  backgroundColor: game.remain > 0 ? "#e0f7fa" : "#ccc",
+                  border: "1px solid black"
                 }}
               >
                 ยืมเกม
@@ -278,17 +307,17 @@ export default function GamePage() {
                 borderRadius: 4
               }}
             >
-              <h4 style={{margin: "0 0 5px 0"}}>{game.name}</h4>
-              <div style={{fontSize: "0.9em"}}>👥 ใช้ผู้เล่น {game.player}</div>
+              <h4 style={{ margin: "0 0 5px 0" }}>{game.name}</h4>
+              <div style={{ fontSize: "0.9em" }}>👥 ใช้ผู้เล่น {game.player}</div>
 
-              <button 
+              <button
                 onClick={() => handleReturn(game.gameID)}
                 style={{
-                    marginTop: 8,
-                    padding: "5px 10px",
-                    cursor: "pointer",
-                    backgroundColor: "#ffcdd2",
-                    border: "1px solid black"
+                  marginTop: 8,
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  backgroundColor: "#ffcdd2",
+                  border: "1px solid black"
                 }}
               >
                 คืนเกม

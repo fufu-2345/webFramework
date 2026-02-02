@@ -23,7 +23,7 @@ const recordRevenueStatistic = async (conn, timeStart, amount) => {
   // 1. เช็คว่ามีสถิติของชั่วโมงนี้หรือยัง
   const [stats] = await conn.query(
     `SELECT id FROM statistic WHERE DATE_FORMAT(timestart, '%Y-%m-%d %H:00:00') 
-         = DATE_FORMAT(?, '%Y-%m-%d %H:00:00')`,
+        = DATE_FORMAT(?, '%Y-%m-%d %H:00:00')`,
     [timeSlot]
   );
 
@@ -80,7 +80,6 @@ exports.getAvailableTime = async (req, res) => {
 // --- API: จองโต๊ะ (พร้อมบันทึกยอดเงิน) ---
 exports.reserveTable = async (req, res) => {
   const { userID, tableID, slots } = req.body;
-
   // ✅ ใช้ Connection เพื่อทำ Transaction (สำคัญมาก)
   const conn = await db.getConnection();
 
@@ -99,11 +98,12 @@ exports.reserveTable = async (req, res) => {
     if (!table) throw new Error("ไม่พบข้อมูลโต๊ะ");
 
     // 2. บันทึกการจองลง rentTables
+    console.log(userID)
     const [result] = await conn.query(
       `INSERT INTO rentTables 
        (userID, tablesID, remainPlayer, timeStart, timeEnd)
        VALUES (?, ?, ?, ?, ?)`,
-      [userID, tableID, table.player, timeStart, timeEnd]
+      [userID - 1, tableID, table.player, timeStart, timeEnd]
     );
 
     // 3. ✅ วนลูปบันทึกยอดเงินลง Statistic ตามจำนวน Slot ที่จอง
