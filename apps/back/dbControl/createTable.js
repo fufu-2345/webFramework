@@ -14,7 +14,7 @@ async function setupDatabase() {
             multipleStatements: true
         });
         const User = `
-            CREATE TABLE IF NOT EXISTS \`User\` (
+            CREATE TABLE IF NOT EXISTS \`user\` (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 username VARCHAR(255) NOT NULL UNIQUE,
                 email VARCHAR(255) NOT NULL UNIQUE,
@@ -55,7 +55,7 @@ async function setupDatabase() {
                 userID INT NOT NULL,
                 tablesID INT NOT NULL,
                 remainPlayer INT NOT NULL,
-                FOREIGN KEY (userID) REFERENCES \`User\`(id),
+                FOREIGN KEY (userID) REFERENCES \`user\`(id),
                 FOREIGN KEY (tablesID) REFERENCES Tables(id)
             )
         `;

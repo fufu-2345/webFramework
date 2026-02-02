@@ -18,7 +18,7 @@ async function dropAllTables() {
         await connection.execute('DROP TABLE IF EXISTS statistic');
         await connection.execute('DROP TABLE IF EXISTS Game');
         await connection.execute('DROP TABLE IF EXISTS Tables');
-        await connection.execute('DROP TABLE IF EXISTS User');
+        await connection.execute('DROP TABLE IF EXISTS user');
         console.log('Dropped all tables');
     } catch (error) {
         console.error('error ', error.message);
