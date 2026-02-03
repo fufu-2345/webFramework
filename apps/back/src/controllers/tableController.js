@@ -98,7 +98,6 @@ exports.reserveTable = async (req, res) => {
     if (!table) throw new Error("ไม่พบข้อมูลโต๊ะ");
 
     // 2. บันทึกการจองลง rentTables
-    console.log(userID)
     const [result] = await conn.query(
       `INSERT INTO rentTables 
        (userID, tablesID, remainPlayer, timeStart, timeEnd)

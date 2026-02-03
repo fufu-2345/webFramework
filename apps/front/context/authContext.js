@@ -2,13 +2,14 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { meData, logoutUsers } from "../lib/auth";
+import Router from "next/router";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loadingStatus, setLoadingStatus] = useState(true);
-
+    const router = Router;
     useEffect(() => {
         const checkAuth = async () => {
             try {

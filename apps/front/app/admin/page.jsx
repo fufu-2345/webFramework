@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
 import {
     Chart as ChartJS,
@@ -13,6 +14,8 @@ import {
     Legend,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
+import { useAuth } from '../../context/authContext';
+
 
 ChartJS.register(
     CategoryScale,
@@ -27,13 +30,14 @@ ChartJS.register(
 const API_BASE = 'http://localhost:5000/admin';
 
 export default function AdminPage() {
+    const { user, loadingStatus, logout } = useAuth();
     const [activeTab, setActiveTab] = useState('tables');
-
     const [dataList, setDataList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [editId, setEditId] = useState(null);
+    const router = useRouter();
 
-    // ✅ เพิ่ม State สำหรับกรองวันที่ (ค่าเริ่มต้น: ย้อนหลัง 7 วัน ถึง วันปัจจุบัน)
     const [dateFilter, setDateFilter] = useState(() => {
         const today = new Date();
         const sevenDaysAgo = new Date();
@@ -43,22 +47,6 @@ export default function AdminPage() {
             end: today.toISOString().split('T')[0]
         };
     });
-
-    const [formData, setFormData] = useState({
-        name: '',
-        player: '',
-        cost: '',
-        remain: '',
-        type: 'Easy'
-    });
-
-    const [editId, setEditId] = useState(null);
-
-    useEffect(() => {
-        setDataList([]);
-        fetchData();
-        handleCancel();
-    }, [activeTab, dateFilter]); // ✅ เพิ่ม dateFilter ใน dependency เพื่อโหลดใหม่เมื่อเปลี่ยนวันที่
 
     const fetchData = async () => {
         setLoading(true);
@@ -81,6 +69,45 @@ export default function AdminPage() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        if (!loadingStatus && !user) {
+
+            router.push("/login");
+        }
+
+        if (user && user.role !== 'admin') {
+            router.push("/book");
+        }
+    }, [loadingStatus, user, router]);
+
+    const handleCancel = () => {
+        setEditId(null);
+        setFormData({ name: '', player: '', cost: '', remain: '', type: 'Easy' });
+    };
+
+    const [formData, setFormData] = useState({
+        name: '',
+        player: '',
+        cost: '',
+        remain: '',
+        type: 'Easy'
+    });
+
+    useEffect(() => {
+        setDataList([]);
+        fetchData();
+        handleCancel();
+    }, [activeTab, dateFilter]); // ✅ เพิ่ม dateFilter ใน dependency เพื่อโหลดใหม่เมื่อเปลี่ยนวันที่
+
+    if (loadingStatus) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <p className="text-lg">Loading...</p>
+            </div>
+        );
+    }
+    if (!user) return null;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -149,11 +176,6 @@ export default function AdminPage() {
             remain: item.remain || '',
             type: item.type || 'Easy'
         });
-    };
-
-    const handleCancel = () => {
-        setEditId(null);
-        setFormData({ name: '', player: '', cost: '', remain: '', type: 'Easy' });
     };
 
     const handleDelete = (id) => {
@@ -265,8 +287,8 @@ export default function AdminPage() {
                     <button
                         onClick={() => setActiveTab('tables')}
                         className={`px-6 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap ${activeTab === 'tables'
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-200'
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-white text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         🪑 จัดการโต๊ะ (Tables)
@@ -274,8 +296,8 @@ export default function AdminPage() {
                     <button
                         onClick={() => setActiveTab('games')}
                         className={`px-6 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap ${activeTab === 'games'
-                                ? 'bg-purple-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-200'
+                            ? 'bg-purple-600 text-white shadow-md'
+                            : 'bg-white text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         🎮 จัดการเกม (Games)
@@ -283,8 +305,8 @@ export default function AdminPage() {
                     <button
                         onClick={() => setActiveTab('statistics')}
                         className={`px-6 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap ${activeTab === 'statistics'
-                                ? 'bg-teal-600 text-white shadow-md'
-                                : 'bg-white text-gray-600 hover:bg-gray-200'
+                            ? 'bg-teal-600 text-white shadow-md'
+                            : 'bg-white text-gray-600 hover:bg-gray-200'
                             }`}
                     >
                         📊 ดูสถิติ (Statistics)
@@ -298,7 +320,7 @@ export default function AdminPage() {
 
                         {/* ✅ UI สำหรับเลือกช่วงเวลา */}
                         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center gap-4 flex-wrap">
-                            <span className="font-semibold text-gray-700">📅 กรองช่วงเวลา:</span>
+                            <span className="font-semibold text-gray-700">📅 กรอกช่วงเวลา:</span>
                             <div className="flex items-center gap-2">
                                 <label className="text-sm text-gray-600">ตั้งแต่</label>
                                 <input
@@ -427,6 +449,7 @@ export default function AdminPage() {
                                         name="player"
                                         value={formData.player}
                                         onChange={handleChange}
+                                        min={1}
                                         required
                                         className="border border-gray-300 rounded px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     />
@@ -440,6 +463,7 @@ export default function AdminPage() {
                                             name="cost"
                                             value={formData.cost}
                                             onChange={handleChange}
+                                            min={1}
                                             required
                                             className="border border-gray-300 rounded px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         />
@@ -454,6 +478,7 @@ export default function AdminPage() {
                                             name="remain"
                                             value={formData.remain}
                                             onChange={handleChange}
+                                            min={1}
                                             required
                                             className="border border-gray-300 rounded px-3 py-2 w-32 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         />
@@ -463,8 +488,8 @@ export default function AdminPage() {
                                 <button
                                     type="submit"
                                     className={`px-4 py-2 rounded text-white font-medium shadow-sm transition-transform active:scale-95 ${editId
-                                            ? 'bg-orange-500 hover:bg-orange-600'
-                                            : (activeTab === 'tables' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700')
+                                        ? 'bg-orange-500 hover:bg-orange-600'
+                                        : (activeTab === 'tables' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-purple-600 hover:bg-purple-700')
                                         }`}
                                 >
                                     {editId ? 'บันทึกการแก้ไข' : 'เพิ่มข้อมูล'}
