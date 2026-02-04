@@ -442,7 +442,7 @@ export default function AdminPage() {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        {activeTab === 'tables' ? 'รองรับผู้เล่น (คน)' : 'ผู้เล่นแนะนำ'}
+                                        {activeTab === 'tables' ? 'รองรับผู้เล่น (คน)' : 'รองรับผู้เล่น (คน)'}
                                     </label>
                                     <input
                                         type="number"

@@ -118,9 +118,9 @@ export default function GamePage() {
   const handleReturn = async (gameID) => {
     if (!rentTableId) return
     Swal.fire({
-      icon: 'error',
-      title: 'เกิดข้อผิดพลาด!',
-      text: "ไม่พบข้อมูลโต๊ะ",
+      icon: 'success',
+      title: 'คืนเกมสำเร็จ!',
+      text: "คุณได้คืนเกมเรียบร้อยแล้ว",
     });
 
     try {
@@ -174,7 +174,7 @@ export default function GamePage() {
   // --- RENDER: หน้าปกติ ---
   return (
     <div style={{ padding: 30, backgroundColor: "white", minHeight: "100vh", color: "black" }}>
-      <h1>🎲 ระบบยืมบอร์ดเกม <span style={{ fontSize: "0.6em", color: "gray" }}>(โต๊ะที่: {rentTableId})</span></h1>
+      <h1>🎲 ระบบยืมบอร์ดเกม</h1>
 
       <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
         <input

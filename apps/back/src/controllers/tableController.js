@@ -96,13 +96,12 @@ exports.reserveTable = async (req, res) => {
     );
 
     if (!table) throw new Error("ไม่พบข้อมูลโต๊ะ");
-
     // 2. บันทึกการจองลง rentTables
     const [result] = await conn.query(
       `INSERT INTO rentTables 
        (userID, tablesID, remainPlayer, timeStart, timeEnd)
        VALUES (?, ?, ?, ?, ?)`,
-      [userID - 1, tableID, table.player, timeStart, timeEnd]
+      [userID, tableID, table.player, timeStart, timeEnd]
     );
 
     // 3. ✅ วนลูปบันทึกยอดเงินลง Statistic ตามจำนวน Slot ที่จอง

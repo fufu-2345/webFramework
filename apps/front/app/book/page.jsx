@@ -2,10 +2,11 @@
 import { useState, useEffect } from "react";
 import qrImage from "./qr.png";
 import Swal from 'sweetalert2';
+import { useAuth } from "../../context/authContext";
 
 export default function BookPage() {
-  const userID = 2; // สมมติ User ID
-
+  const [userID, setUserID] = useState();
+  const { user, loadingStatus, logout } = useAuth();
   // 1. เปลี่ยน TABLES const เป็น state เพื่อรอรับจาก DB
   const [tables, setTables] = useState([]);
   const [table, setTable] = useState(null);
@@ -16,12 +17,28 @@ export default function BookPage() {
   // State สำหรับคุมการเปิด/ปิด Popup
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
+  // useEffect(() => {
+  //   if (!loadingStatus && !user) {
+  //     router.push("/login");
+  //   }
+  // }, [user, loadingStatus, router]);
+
+  // if (loadingStatus) {
+  //   return (
+  //     <div className="flex min-h-screen items-center justify-center">
+  //       <p className="text-lg">Loading...</p>
+  //     </div>
+  //   );
+  // }
+  // if (!user) return null;
+
   // --- USE EFFECT: โหลดข้อมูลโต๊ะเมื่อเปิดหน้าเว็บ ---
   useEffect(() => {
     const fetchTables = async () => {
       try {
         const res = await fetch("http://localhost:5000/tables");
         const data = await res.json();
+        setUserID(user.id);
         setTables(data);
       } catch (error) {
         console.error("Error fetching tables:", error);
@@ -107,7 +124,7 @@ export default function BookPage() {
       // ✅ จุดที่แก้ไข: ใช้ rentTableId ที่ Backend ส่งกลับมา (result.rentTableId)
       // ID นี้คือ rentTable.id (Primary Key ของการจองครั้งนี้)
       if (result.rentTableId) {
-        window.location.href = `http://localhost:3000/borrow?tableId=${result.rentTableId}`;
+        window.location.href = `http://localhost:3000/myTables`;
       } else {
         console.error("ไม่ได้รับ rentTableId จาก Backend");
         // กรณีกันเหนียว: ถ้าไม่มี ID ให้กลับไปหน้าหลักหรือแจ้งเตือน
@@ -127,7 +144,6 @@ export default function BookPage() {
     <div style={styles.page}>
       <div style={styles.card}>
         <h2 style={styles.title}>🪑จองโต๊ะบอร์ดเกม</h2>
-
         {/* ===== เลือกโต๊ะ ===== */}
         <p style={styles.label}>เลือกขนาดโต๊ะ</p>
         <div style={styles.tableGrid}>
